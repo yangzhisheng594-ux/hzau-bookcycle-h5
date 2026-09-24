@@ -1,0 +1,274 @@
+/* ===== 全局基础样式（app.wxss 等价移植，rpx 按 750 设计宽等比缩放） ===== */
+:root {
+  /* 1rpx = 容器宽 / 750；容器上限 480px，PC 端居中显示 */
+  --rpx: calc(min(100vw, 480px) / 750);
+  --app-max-width: 480px;
+  /* 刘海屏/状态栏安全区：iOS 灵动岛/刘海有值，Android 与 PC 端为 0。
+     必须走 env() 取值——H5 里状态栏由系统绘制，页面顶部只需让开这一块。 */
+  --safe-top: env(safe-area-inset-top, 0px);
+  /* H5 模拟小程序原生 tabbar 占位高度 */
+  --tabbar-h: calc(calc(100 * var(--rpx)) + env(safe-area-inset-bottom));
+}
+
+* { margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  background: #e9e7e2; /* PC 端容器外的衬底 */
+  color: #2c463b;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: calc(28 * var(--rpx));
+}
+
+#app {
+  position: relative;
+  max-width: var(--app-max-width);
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #f6f5f2;
+  box-shadow: 0 0 24px rgba(0, 0, 0, .06);
+}
+
+img { display: block; }
+/* 小程序标签语义：view 块级、text 行内 */
+view { display: block; }
+text { display: inline; }
+button { border: 0; background: none; cursor: pointer; font-family: inherit; }
+input, textarea, select { border: 0; outline: none; background: transparent; font-family: inherit; }
+input::placeholder, textarea::placeholder { color: #aab5ad; }
+
+/* 小程序 button 默认样式等价 */
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-weight: 600;
+  line-height: 1.2 !important;
+  text-align: center;
+}
+button[disabled] { cursor: not-allowed; }
+
+#app .page-nav-title,
+#app .nav-title {
+  display: block;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* 自定义导航页统一预留安全区
+ * 高度 = 标题行(104rpx) + 刘海安全区；padding-top 只让开安全区本身。
+ * ⚠️ 这里**不能**再叠一层固定的 100rpx「伪状态栏」：
+ *    H5（浏览器/微信 WebView）里状态栏是系统绘制的，页面顶部再从 0 起算，
+ *    旧的 `height:204rpx + padding-top:100rpx` 会在标题下方留下约 65px 空占位，
+ *    把 logo 与整个首页内容整体下推（首页顶部大留白即由此产生）。
+ *    去掉 !important 后，各页面自己的 .page-nav 规则仍按本规则统一生效。 */
+#app .page-nav,
+#app .detail-nav {
+  height: calc(calc(104 * var(--rpx)) + var(--safe-top));
+  padding-top: var(--safe-top);
+  box-sizing: border-box;
+}
+
+#app .nav-back { top: calc(calc(26 * var(--rpx)) + var(--safe-top)); }
+
+/* 二级页面统一视觉规范 */
+#app .page-nav-title,
+#app .nav-title,
+#app .header .title {
+  color: #166a3f;
+  font-size: calc(31 * var(--rpx));
+  font-weight: 750;
+  letter-spacing: calc(.8 * var(--rpx));
+}
+
+#app .nav-back { line-height: 1 !important; }
+
+#app .publish-button,
+#app .submit-button,
+#app .save-btn,
+#app .pay-button,
+#app .checkout-btn,
+#app .empty-btn,
+#app .order-actions button,
+#app .actions button,
+#app .action-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  text-align: center;
+}
+
+#app .manage-button,
+#app .respond-button,
+#app .share-button,
+#app .manage-btn,
+#app .profile-action {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  text-align: center;
+}
+
+#app .empty-cart,
+#app .empty-orders,
+#app .empty-list,
+#app .empty,
+#app .loading-state,
+#app .loading-placeholder,
+#app .status {
+  box-sizing: border-box;
+  color: #8b9f91;
+  line-height: 1.55;
+  text-align: center;
+}
+
+#app .empty-cart,
+#app .empty-orders,
+#app .empty-list,
+#app .empty {
+  border: calc(1 * var(--rpx)) dashed #d8e7da;
+  border-radius: calc(22 * var(--rpx));
+  background: rgba(255, 255, 255, .62);
+}
+
+/* ===== wx API 适配层组件样式 ===== */
+.wx-toast {
+  position: fixed;
+  top: 45%;
+  left: 50%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 70%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .72);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+  word-break: break-all;
+}
+.wx-toast.show { opacity: 1; }
+.wx-toast-icon { font-size: 22px; line-height: 1; margin-bottom: 4px; }
+.wx-toast-success { color: #7ee2a8; }
+.wx-toast-error { color: #ff8a80; }
+
+.wx-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.wx-loading.with-mask { background: rgba(255, 255, 255, .18); pointer-events: auto; }
+.wx-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .68);
+  color: #fff;
+  font-size: 13px;
+}
+.wx-loading-spinner {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 8px;
+  border: 2px solid rgba(255, 255, 255, .3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: wx-spin .8s linear infinite;
+}
+@keyframes wx-spin { to { transform: rotate(360deg); } }
+
+.wx-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .45);
+}
+.wx-modal {
+  width: min(78%, 320px);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  text-align: center;
+}
+.wx-modal-title { padding: 20px 20px 6px; color: #1f3329; font-size: 16px; font-weight: 700; }
+.wx-modal-content { padding: 8px 22px 18px; color: #5a6f63; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+.wx-modal-actions { display: flex; border-top: 1px solid #f0eeea; }
+.wx-modal-btn { flex: 1; height: 46px; font-size: 15px; font-weight: 600; }
+.wx-modal-btn.cancel { color: #7a8e82; border-right: 1px solid #f0eeea; }
+.wx-modal-btn.confirm { color: #166a3f; }
+
+.wx-preview-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, .88);
+  overflow-y: auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.wx-preview-mask img { max-width: 100%; max-height: 82vh; border-radius: 8px; }
+
+/* 轻量输入弹窗（修改密码等场景） */
+.wx-prompt-mask { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.45); padding: 24px; box-sizing: border-box; }
+.wx-prompt { width: 100%; max-width: 340px; padding: 20px; border-radius: 14px; background: #fff; }
+.wx-prompt-title { margin-bottom: 14px; color: #29443a; font-size: 16px; font-weight: 700; text-align: center; }
+.wx-prompt-input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid #dfe4dd; border-radius: 10px; font-size: 15px; box-sizing: border-box; }
+.wx-prompt-input:focus { border-color: #166a3f; outline: none; }
+.wx-prompt-actions { display: flex; margin-top: 16px; gap: 10px; }
+.wx-prompt-actions button { flex: 1; height: 42px; border: 0; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.wx-prompt-cancel { background: #f2f4f0; color: #7a8e82; }
+.wx-prompt-ok { background: #166a3f; color: #fff; }
+
+/* ===== 自定义复选框（等价小程序 checkbox 圆形样式） ===== */
+.wx-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(32 * var(--rpx));
+  height: calc(32 * var(--rpx));
+  border: calc(2 * var(--rpx)) solid #cbd3dd;
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+  flex: none;
+}
+.wx-checkbox.checked { border-color: #166a3f; background: #166a3f; }
+.wx-checkbox.checked::after {
+  content: '';
+  width: 40%;
+  height: 22%;
+  border-left: calc(3 * var(--rpx)) solid #fff;
+  border-bottom: calc(3 * var(--rpx)) solid #fff;
+  transform: rotate(-45deg) translateY(-10%);
+}
+.wx-checkbox.disabled { opacity: .4; }
+
+/* 页面切换淡入 */
+.page-fade-enter-active { transition: opacity .16s ease; }
+.page-fade-enter-from { opacity: 0; }

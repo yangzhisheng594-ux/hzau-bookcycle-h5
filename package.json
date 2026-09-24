@@ -1,0 +1,41 @@
+{
+  "name": "hzau-bookcycle-h5",
+  "private": true,
+  "version": "1.0.0",
+  "description": "华农书循环 · 校园二手教材流转平台（H5，Vue3 + Node）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server/index.js",
+    "test": "node server/.t/test-api.mjs && node server/.t/test-auth.mjs && node server/.t/test-login-security.mjs && node server/.t/test-mail.mjs && node server/.t/test-emailcode.mjs && node server/.t/test-datadir.mjs && node server/.t/test-lifecycle.mjs && node server/.t/test-timeout.mjs && node server/.t/test-profile.mjs",
+    "test:api": "node server/.t/test-api.mjs",
+    "test:auth": "node server/.t/test-auth.mjs",
+    "test:login": "node server/.t/test-login-security.mjs",
+    "test:mail": "node server/.t/test-mail.mjs",
+    "test:emailcode": "node server/.t/test-emailcode.mjs",
+    "test:datadir": "node server/.t/test-datadir.mjs",
+    "test:lifecycle": "node server/.t/test-lifecycle.mjs",
+    "test:timeout": "node server/.t/test-timeout.mjs",
+    "test:online": "node server/.t/test-online.mjs",
+    "postinstall": "npm run build",
+    "deploy:status": "node scripts/deploy-guard.mjs status",
+    "deploy:prep": "node scripts/deploy-guard.mjs prep",
+    "deploy:restore": "node scripts/deploy-guard.mjs restore",
+    "test:profile": "node server/.t/test-profile.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^4.19.2",
+    "html5-qrcode": "^2.3.8",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^10.0.9",
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.2",
+    "vite": "^5.4.2"
+  }
+}
