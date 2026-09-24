@@ -1,0 +1,22 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+
+# 运行期数据（真实用户资料，绝不入库）
+server/data/
+server/uploads/
+
+# 凭据 / 密钥（绝不入库）
+server/mail-config.json
+server/mail-outbox.log
+server/site-config.json
+server/data/jwt-secret.key
+server/data/admin-password.key
+.env
+.env.*
+!_example.env
+
+# 部署期临时产物
+_runtime-at-deploy/
+*.log
